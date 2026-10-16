@@ -1,0 +1,276 @@
+# NetWatch Configuration Settings
+# Mission 02: Adaptive Detection & Log Compatibility
+# Edit this file to tune rules, whitelist activities, or add trusted servers.
+# Changes take effect on the NEXT analysis run - no code edits required.
+
+rules:
+  unusual_data_transfer:
+    enabled: true
+    baseline_multiplier: 3.0
+    std_dev_multiplier: 2.5
+    min_bytes_threshold: 10485760  # 10 MB minimum threshold to avoid noisy alerts
+    description: "Detects hosts transferring significantly more volume than historical baseline"
+
+  port_probing:
+    enabled: true
+    distinct_port_threshold: 15
+    time_window_seconds: 300
+    description: "Detects hosts contacting an unusually large number of distinct ports in short succession"
+
+  network_sweep:
+    enabled: true
+    distinct_host_threshold: 10  # Min distinct IPs in window to flag
+    time_window_seconds: 120      # Tighter window for ICMP/ARP sweeps
+    description: "Detects horizontal network sweeps - single source scanning many destination IPs"
+
+  lateral_movement:
+    enabled: true
+    internal_prefix: "192.168."
+    internal_prefix_extra: "10.0."
+    sensitive_ports: [22, 23, 135, 139, 445, 3389, 5985, 5986]
+    min_lateral_hops: 3
+    time_window_seconds: 600
+    description: "Detects one host reaching multiple internal hosts over administrative ports"
+
+  lateral_movement:
+    enabled: true
+    internal_prefix: "192.168."   # Comma-separated prefixes treated as internal
+    internal_prefix_extra: "10.0."
+    sensitive_ports: [22, 23, 135, 139, 445, 3389, 5985, 5986]
+    min_lateral_hops: 3           # Minimum internal targets contacted via sensitive ports
+    description: "Detects host moving laterally inside the network via admin/lateral movement ports"
+
+  destination_diversity:
+    enabled: true
+    baseline_multiplier: 3.0
+    min_dest_threshold: 10
+    time_window_seconds: 300
+    description: "Detects sudden surges in distinct external or internal destinations contacted"
+
+  periodic_connections:
+    enabled: true
+    min_occurrences: 4
+    tolerance_seconds: 5.0
+    cv_threshold: 0.15
+    description: "Detects regular automated beaconing behavior with low interval variance"
+
+  unexpected_host_communication:
+    enabled: true
+    min_baseline_flows: 5
+    flag_external_unseen: true
+    description: "Detects communications between hosts that never communicated during baseline"
+
+  dns_behaviour:
+    enabled: true
+    query_volume_multiplier: 3.0
+    min_query_volume: 15
+    unique_query_ratio_threshold: 0.75
+    description: "Detects spikes in DNS queries and high unique domain ratios (tunneling/DGA)"
+
+  blocked_failed_connections:
+    enabled: true
+    failure_rate_threshold: 0.35
+    min_failed_count: 5
+    baseline_multiplier: 2.5
+    description: "Detects abnormal increases in denied, dropped, or failed connections"
+
+baseline:
+  min_records: 10
+  description: "Minimum records required in learning period to establish valid baseline"
+
+scoring:
+  weights:
+    severity: 0.35
+    deviation: 0.25
+    persistence: 0.20
+    category_diversity: 0.20
+  severity_base_points:
+    Low: 20
+    Medium: 45
+    High: 75
+    Critical: 95
+  score_thresholds:
+    Low: 35
+    Medium: 65
+    High: 85
+    Critical: 100
+
+upload:
+  max_file_size_mb: 50
+  allowed_extensions:
+    - ".csv"
+    - ".txt"
+
+# -------------------------------------------------------------------------------
+# Approved Activities — legitimate operations that may resemble attacks.
+# Findings matching these are TAGGED (not deleted) so analysts can audit them.
+# -------------------------------------------------------------------------------
+approved_activities:
+  - id: "APP-01"
+    name: "Nightly Database Backup"
+    source_ip: "192.168.1.99"
+    destination_ip: "10.0.0.50"
+    ports: [445, 873, 22]
+    description: "Scheduled high-volume server synchronization to cold storage"
+
+  - id: "APP-02"
+    name: "Authorized Vulnerability Scanner"
+    source_ip: "192.168.1.250"
+    destination_ip: null
+    ports: []
+    description: "Scheduled vulnerability scan appliance - generates port sweep and probe activity"
+
+  - id: "APP-03"
+    name: "Windows Patch Server Push"
+    source_ip: "192.168.1.200"
+    destination_ip: null
+    ports: [80, 443, 8530, 8531]
+    description: "WSUS/SCCM patch distribution server - legitimate high-volume multicast"
+
+  - id: "APP-04"
+    name: "Nightly Log Aggregation Agent"
+    source_ip: "192.168.1.180"
+    destination_ip: null
+    ports: [514, 6514, 9200, 5044]
+    description: "Central log aggregator collecting syslog/Elastic agent data from all hosts"
+
+# -------------------------------------------------------------------------------
+# Maintenance Windows — no alerts fired during these UTC windows.
+# Format: HH:MM (24h UTC). Use 'days' to restrict to specific weekdays (0=Mon).
+# -------------------------------------------------------------------------------
+maintenance_windows:
+  - id: "MW-01"
+    name: "Saturday Night Backup Window"
+    start_hour: 1
+    start_minute: 0
+    end_hour: 5
+    end_minute: 0
+    days: [5]  # Saturday only
+    source_ips: ["192.168.1.99", "192.168.1.200"]
+    description: "Known-good maintenance window - suppress all alerts for listed sources"
+
+  - id: "MW-02"
+    name: "Weekly Vulnerability Scan Window"
+    start_hour: 2
+    start_minute: 0
+    end_hour: 4
+    end_minute: 0
+    days: [6]  # Sunday only
+    source_ips: ["192.168.1.250"]
+    description: "Authorized weekly infrastructure vulnerability assessment"
+
+# -------------------------------------------------------------------------------
+# Trusted Servers — IPs whose INBOUND connections suppress low-severity alerts.
+# -------------------------------------------------------------------------------
+trusted_servers:
+  - ip: "192.168.1.1"
+    role: "Default Gateway / Router"
+  - ip: "192.168.1.10"
+    role: "Primary DNS Server"
+  - ip: "192.168.1.11"
+    role: "Secondary DNS Server"
+  - ip: "192.168.1.200"
+    role: "Patch Management Server (WSUS)"
+  - ip: "10.0.0.50"
+    role: "Backup Storage Target (NAS)"
+
+# -------------------------------------------------------------------------------
+# Dataset Schema Profiles — declare named column mappings for known log formats.
+# Select a profile by passing ?schema=<profile_id> on the upload endpoint,
+# or let auto-detection pick the closest match.
+# -------------------------------------------------------------------------------
+schema_profiles:
+  - id: "netwatch_default"
+    name: "NetWatch Default Schema"
+    description: "Built-in sample dataset columns"
+    mappings:
+      timestamp: "timestamp"
+      src_ip: "src_ip"
+      dst_ip: "dst_ip"
+      src_port: "src_port"
+      dst_port: "dst_port"
+      protocol: "protocol"
+      bytes_sent: "bytes_sent"
+      bytes_received: "bytes_received"
+      packets: "packets"
+      duration: "duration"
+      action: "action"
+      dns_query: "dns_query"
+      record_id: "record_id"
+      label: "label"
+
+  - id: "zeek_conn"
+    name: "Zeek conn.log (TSV)"
+    description: "Zeek/Bro conn.log export with standard field names"
+    mappings:
+      timestamp: "ts"
+      src_ip: "id.orig_h"
+      dst_ip: "id.resp_h"
+      src_port: "id.orig_p"
+      dst_port: "id.resp_p"
+      protocol: "proto"
+      bytes_sent: "orig_bytes"
+      bytes_received: "resp_bytes"
+      packets: "orig_pkts"
+      duration: "duration"
+      action: "conn_state"
+      dns_query: null
+      record_id: "uid"
+      label: null
+
+  - id: "suricata_eve"
+    name: "Suricata EVE JSON (flattened CSV)"
+    description: "Suricata alert/flow events exported as CSV"
+    mappings:
+      timestamp: "timestamp"
+      src_ip: "src_ip"
+      dst_ip: "dest_ip"
+      src_port: "src_port"
+      dst_port: "dest_port"
+      protocol: "proto"
+      bytes_sent: "flow.bytes_toserver"
+      bytes_received: "flow.bytes_toclient"
+      packets: "flow.pkts_toserver"
+      duration: null
+      action: "alert.action"
+      dns_query: "dns.rrname"
+      record_id: "flow_id"
+      label: "alert.signature"
+
+  - id: "cisco_asa"
+    name: "Cisco ASA Firewall Log (CSV)"
+    description: "ASA syslog-to-CSV conversion with standard field names"
+    mappings:
+      timestamp: "Date/Time"
+      src_ip: "Source IP"
+      dst_ip: "Destination IP"
+      src_port: "Source Port"
+      dst_port: "Destination Port"
+      protocol: "Protocol"
+      bytes_sent: "Bytes Sent"
+      bytes_received: "Bytes Received"
+      packets: null
+      duration: "Duration"
+      action: "Action"
+      dns_query: null
+      record_id: null
+      label: null
+
+  - id: "palo_alto"
+    name: "Palo Alto Networks Traffic Log (CSV)"
+    description: "PAN-OS traffic log exported as CSV"
+    mappings:
+      timestamp: "Start Time"
+      src_ip: "Source address"
+      dst_ip: "Destination address"
+      src_port: "Source Port"
+      dst_port: "Destination Port"
+      protocol: "IP Protocol"
+      bytes_sent: "Bytes Sent"
+      bytes_received: "Bytes Received"
+      packets: "Packets"
+      duration: "Elapsed Time (sec)"
+      action: "Action"
+      dns_query: null
+      record_id: "Log Action"
+      label: "Application"
