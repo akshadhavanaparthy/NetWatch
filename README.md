@@ -181,7 +181,6 @@ Open `http://localhost:5173` in your browser.
 
 ## Running Verification Tests
 
-### Mission 02 Notes
 - Trusted sources, scanner/patch/backup activities, maintenance windows, trusted servers, and dataset schema profiles are managed in `config/settings.yaml`.
 - The Zeek `conn.log` profile maps `ts`, `id.orig_h`, `id.resp_h`, `id.orig_p`, and `id.resp_p` to the same canonical flow fields used by the native dataset. Both formats pass through the same validator and detector.
 - Findings include per-finding risk scores, rule explanations, supporting record IDs, and suppression reasons. Incidents include a timestamp-ordered timeline and retain flow evidence.
