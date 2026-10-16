@@ -194,6 +194,58 @@ Run the backend test suite from the project root:
 cd c:\Users\harsh\OneDrive\Desktop\netwatch
 .venv\Scripts\pytest backend\tests -v
 ```
+## 🛠️ Technical Stack
+
+### 🎨 Frontend
+
+* **React.js** – Component-based user interface for the security dashboard.
+* **JavaScript (JSX)** – Frontend logic and interactive components.
+* **CSS3** – Styling and responsive dashboard design.
+* **Vite** – Frontend development server and build tool.
+
+### ⚙️ Backend
+
+* **Python** – Core processing and network anomaly detection logic.
+* **FastAPI** – REST API framework connecting the frontend with backend services.
+
+### 🔍 Detection & Analysis
+
+* **Rule-Based Detection Engine** – Identifies suspicious network activity using configurable detection rules.
+* **Behavioral Baselines** – Helps identify deviations from typical network traffic patterns.
+* **YAML** – Configuration of detection rules, thresholds, and approved activities.
+* **Python Data Processing** – Parses and analyzes uploaded network-flow datasets.
+
+### 📊 Visualization
+
+* **Cytoscape.js** – Visualizes network relationships and traffic connections.
+* **Dashboard Charts** – Presents traffic statistics, anomalies, and investigation findings.
+
+### 🤖 AI Integration
+
+* **Ollama (Optional)** – Supports local AI-assisted security incident assessment without requiring a cloud-based AI API.
+
+### 🧪 Testing
+
+* **Pytest** – Tests backend functionality and detection logic.
+
+### 📁 Data & Reporting
+
+* **CSV** – Input format for network-flow datasets and exported analysis results.
+* **HTML** – Generates readable forensic and investigation reports.
+
+---
+
+## 🔄 System Workflow
+
+1. **Data Ingestion** – Upload network-flow CSV files through the dashboard.
+2. **Data Processing** – Validate and process the uploaded records using Python.
+3. **Behavioral Analysis** – Establish or use historical traffic baselines to understand normal activity.
+4. **Anomaly Detection** – Apply configurable rules to identify suspicious traffic patterns.
+5. **Incident Assessment** – Correlate findings and prioritize suspicious activities for investigation.
+6. **Visualization** – Display traffic analytics, anomalies, and network relationships.
+7. **Report Generation** – Export investigation results in CSV or HTML format.
+
+---
 
 **Results (13/13 Passed)**:
 - `test_suggest_column_mapping` (Auto-aliasing of common flow headers)
@@ -218,3 +270,4 @@ cd c:\Users\harsh\OneDrive\Desktop\netwatch\frontend
 npm run build
 ```
 Builds cleanly with zero errors.
+
