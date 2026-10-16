@@ -4,6 +4,47 @@ NetWatch is a local, full-stack cybersecurity web application designed to analyz
 
 ---
 
+## 🛠️ Technical Stack
+
+### 🎨 Frontend
+
+* **React.js** – Component-based user interface for the security dashboard.
+* **JavaScript (JSX)** – Frontend logic and interactive components.
+* **CSS3** – Styling and responsive dashboard design.
+* **Vite** – Frontend development server and build tool.
+
+### ⚙️ Backend
+
+* **Python** – Core processing and network anomaly detection logic.
+* **FastAPI** – REST API framework connecting the frontend with backend services.
+
+### 🔍 Detection & Analysis
+
+* **Rule-Based Detection Engine** – Identifies suspicious network activity using configurable detection rules.
+* **Behavioral Baselines** – Helps identify deviations from typical network traffic patterns.
+* **YAML** – Configuration of detection rules, thresholds, and approved activities.
+* **Python Data Processing** – Parses and analyzes uploaded network-flow datasets.
+
+### 📊 Visualization
+
+* **Cytoscape.js** – Visualizes network relationships and traffic connections.
+* **Dashboard Charts** – Presents traffic statistics, anomalies, and investigation findings.
+
+### 🤖 AI Integration
+
+* **Ollama (Optional)** – Supports local AI-assisted security incident assessment without requiring a cloud-based AI API.
+
+### 🧪 Testing
+
+* **Pytest** – Tests backend functionality and detection logic.
+
+### 📁 Data & Reporting
+
+* **CSV** – Input format for network-flow datasets and exported analysis results.
+* **HTML** – Generates readable forensic and investigation reports.
+
+---
+
 ## Key Features
 
 1. **Local Processing & Privacy**: Complete local execution. No cloud API or remote telemetry required.
@@ -194,46 +235,6 @@ Run the backend test suite from the project root:
 cd c:\Users\harsh\OneDrive\Desktop\netwatch
 .venv\Scripts\pytest backend\tests -v
 ```
-## 🛠️ Technical Stack
-
-### 🎨 Frontend
-
-* **React.js** – Component-based user interface for the security dashboard.
-* **JavaScript (JSX)** – Frontend logic and interactive components.
-* **CSS3** – Styling and responsive dashboard design.
-* **Vite** – Frontend development server and build tool.
-
-### ⚙️ Backend
-
-* **Python** – Core processing and network anomaly detection logic.
-* **FastAPI** – REST API framework connecting the frontend with backend services.
-
-### 🔍 Detection & Analysis
-
-* **Rule-Based Detection Engine** – Identifies suspicious network activity using configurable detection rules.
-* **Behavioral Baselines** – Helps identify deviations from typical network traffic patterns.
-* **YAML** – Configuration of detection rules, thresholds, and approved activities.
-* **Python Data Processing** – Parses and analyzes uploaded network-flow datasets.
-
-### 📊 Visualization
-
-* **Cytoscape.js** – Visualizes network relationships and traffic connections.
-* **Dashboard Charts** – Presents traffic statistics, anomalies, and investigation findings.
-
-### 🤖 AI Integration
-
-* **Ollama (Optional)** – Supports local AI-assisted security incident assessment without requiring a cloud-based AI API.
-
-### 🧪 Testing
-
-* **Pytest** – Tests backend functionality and detection logic.
-
-### 📁 Data & Reporting
-
-* **CSV** – Input format for network-flow datasets and exported analysis results.
-* **HTML** – Generates readable forensic and investigation reports.
-
----
 
 ## 🔄 System Workflow
 
